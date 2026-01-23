@@ -21,14 +21,22 @@ NIGHTLY_FILE="$REPORTS_DIR/nightly-$DATE.json"
 ANALYSIS_FILE="$REPORTS_DIR/analysis-$DATE.json"
 
 # Get API key from environment or Claude settings
-CLAUDE_API_KEY="${CLAUDE_API_KEY}"
+CLAUDE_API_KEY="${CLAUDE_API_KEY:-}"
 if [[ -z "$CLAUDE_API_KEY" ]]; then
-    # Try to load from settings
-    if [[ -f "$HOME/.claude/settings.json" ]] || [[ -f "$HOME/Development/id8/tools/claude-settings/settings.json" ]]; then
-        echo "✗ Error: CLAUDE_API_KEY not set and cannot read from settings"
-        echo "  Set: export CLAUDE_API_KEY='sk-...'"
-        exit 1
-    fi
+    # Try to read from settings files
+    for settings_file in "$HOME/.claude/settings.json" "$HOME/Development/id8/tools/claude-settings/settings.json"; do
+        if [[ -f "$settings_file" ]] && command -v jq &> /dev/null; then
+            CLAUDE_API_KEY=$(jq -r '.api_key // empty' "$settings_file" 2>/dev/null)
+            [[ -n "$CLAUDE_API_KEY" ]] && break
+        fi
+    done
+fi
+
+if [[ -z "$CLAUDE_API_KEY" ]]; then
+    echo "✗ Error: CLAUDE_API_KEY not set"
+    echo "  Set: export CLAUDE_API_KEY='sk-...'"
+    echo "  Or add to ~/.claude/settings.json: {\"api_key\": \"sk-...\"}"
+    exit 1
 fi
 
 # Check if nightly report exists
@@ -43,8 +51,8 @@ nightly_content=$(cat "$NIGHTLY_FILE")
 
 echo "Analyzing report with Claude..."
 
-# Prepare analysis prompt
-analysis_prompt="You are analyzing a development portfolio health report. Your job is to:
+# Prepare analysis prompt (system instructions only, health report read separately)
+system_prompt="You are analyzing a development portfolio health report. Your job is to:
 
 1. CATEGORIZE ISSUES by severity and type
 2. IDENTIFY pipeline blockers (Stage 1-4 blockers are critical)
@@ -60,22 +68,21 @@ Respond with valid JSON (no markdown, no code blocks). Include these fields:
 - quick_wins (array)
 - agent_parity_gaps (array)
 - decision_gates (array)
-- recommendations (object with immediate, this_week, next_week arrays)
+- recommendations (object with immediate, this_week, next_week arrays)"
 
-Health Report to analyze:
-$(cat "$NIGHTLY_FILE")"
-
-# Build JSON payload properly using jq
+# Build JSON payload safely using jq with proper escaping
+# This prevents command injection by letting jq handle the file content
 payload=$(jq -n \
   --arg model "claude-opus-4-5-20251101" \
-  --arg prompt "$analysis_prompt" \
+  --arg system_prompt "$system_prompt" \
+  --rawfile health_report "$NIGHTLY_FILE" \
   '{
     model: $model,
     max_tokens: 2000,
     messages: [
       {
         role: "user",
-        content: $prompt
+        content: ($system_prompt + "\n\nHealth Report to analyze:\n" + $health_report)
       }
     ]
   }')
