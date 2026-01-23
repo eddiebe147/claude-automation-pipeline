@@ -218,6 +218,8 @@ fi
 echo "✓ Health report saved: $NIGHTLY_FILE"
 
 # Keep only last 30 days of reports
-find "$REPORTS_DIR" -name "nightly-*.json" -type f -mtime +30 -delete 2>/dev/null || true
+if ! find "$REPORTS_DIR" -name "nightly-*.json" -type f -mtime +30 -delete 2>/dev/null; then
+    echo "Warning: Failed to clean old reports (non-critical)" >&2
+fi
 
 exit 0
