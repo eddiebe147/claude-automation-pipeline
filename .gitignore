@@ -32,3 +32,26 @@ build/
 # Local configuration
 local/
 temp/
+
+# Nested git repositories (each has its own repo)
+Homer/
+id8/
+stitch/
+learning/
+_archive/
+session-resilience-agents
+
+# Browser automation screenshots
+.playwright-mcp/
+*.png
+
+# Temporary files
+*.docx
+*.csv
+.worktrees/
+.pnpm-store/
+
+# Other nested projects
+clawd/
+Homer-*/
+homer-pro-*/
