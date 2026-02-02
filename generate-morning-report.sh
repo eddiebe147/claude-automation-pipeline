@@ -277,8 +277,11 @@ echo "✓ Morning report saved: $MORNING_REPORT"
 # Keep only last 30 days of reports
 find "$REPORTS_DIR" -name "morning-*.md" -type f -mtime +30 -delete 2>/dev/null || true
 
-# Open the report
-if command -v open &> /dev/null; then
+# Open the report in MacDown (lightweight markdown viewer)
+if [[ -d "/Applications/MacDown.app" ]]; then
+    open -a "MacDown" "$MORNING_REPORT"
+elif command -v open &> /dev/null; then
+    # Fallback to default if MacDown not installed
     open "$MORNING_REPORT"
 fi
 
