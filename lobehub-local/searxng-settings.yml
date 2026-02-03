@@ -95,7 +95,7 @@ server:
   # If your instance owns a /etc/searxng/settings.yml file, then set the following
   # values there.
 
-  secret_key: "${SEARXNG_SECRET}"  # Is overwritten by ${SEARXNG_SECRET}
+  secret_key: "${SEARXNG_SECRET}"  # Set via env
   # Proxy image results through SearXNG. Is overwritten by ${SEARXNG_IMAGE_PROXY}
   image_proxy: false
   # 1.0 and 1.1 are supported
@@ -1502,8 +1502,7 @@ engines:
   #    engine: postgresql
   #    database: postgres
   #    username: postgres
-  #    password: ${POSTGRES_PASSWORD}
-  #    limit: 10
+    #    limit: 10
   #    query_str: 'SELECT * from my_table WHERE my_column = %(query)s'
   #    shortcut : psql
 

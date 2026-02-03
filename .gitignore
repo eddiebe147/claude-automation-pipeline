@@ -50,6 +50,7 @@ session-resilience-agents
 *.csv
 .worktrees/
 .pnpm-store/
+claude-plans/
 
 # Other nested projects
 clawd/

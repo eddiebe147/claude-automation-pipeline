@@ -72,7 +72,7 @@ Respond with valid JSON (no markdown, no code blocks). Include these fields:
 - summary
 - critical_issues (array)
 - high_priority (array with id, type, project, description)
-- quick_wins (array)
+- quick_wins (array of objects with id, project, description, estimated_effort, risk)
 - agent_parity_gaps (array)
 - decision_gates (array)
 - recommendations (object with immediate, this_week, next_week arrays)"
