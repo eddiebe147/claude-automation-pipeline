@@ -50,7 +50,7 @@ In LobeHub Settings > Plugins > MCP, add:
       "args": ["/Users/eddiebelaval/Development/lobehub-local/mcp-bridge/dist/index.js"],
       "env": {
         "CLAWDBOT_GATEWAY_URL": "ws://127.0.0.1:18789",
-        "CLAWDBOT_AUTH_TOKEN": "eca2cfbff0223b4396f0a2223b74c712488ecf29eed7ef81"
+        "CLAWDBOT_AUTH_TOKEN": "${CLAWDBOT_AUTH_TOKEN}"
       }
     }
   }
