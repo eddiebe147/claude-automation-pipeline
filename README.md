@@ -14,7 +14,7 @@ An intelligent development workflow that automatically surfaces portfolio health
 
 ```bash
 # Clone this repo
-git clone https://github.com/eddiebe147/claude-automation-pipeline.git
+git clone https://github.com/eddiebelaval/claude-automation-pipeline.git
 cd claude-automation-pipeline
 
 # Copy to Development directory
