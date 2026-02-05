@@ -7,7 +7,7 @@
 # 1. Aggregates agent activity from last 24 hours
 # 2. Includes automation findings
 # 3. Shows task status per agent
-# 4. Sends formatted report to Telegram via OpenClaw
+# 4. Sends notifications via centralized dispatcher (Telegram + macOS + MacDown)
 # 5. Archives standup in ~/.hydra/logs/standups/
 
 set -euo pipefail
@@ -20,7 +20,6 @@ STANDUP_DIR="$HOME/.hydra/logs/standups"
 DATE=$(date +%Y-%m-%d)
 LOG_FILE="$LOGS_DIR/standup-$DATE.log"
 STANDUP_FILE="$STANDUP_DIR/standup-$DATE.md"
-OPENCLAW_GATEWAY="http://localhost:18789"
 
 # Create directories
 mkdir -p "$LOGS_DIR" "$STANDUP_DIR"
@@ -258,44 +257,39 @@ sqlite3 "$HYDRA_DB" "
 log "Standup stored in database"
 
 # ============================================================================
-# SEND TO TELEGRAM (via OpenClaw)
+# SEND NOTIFICATIONS (via centralized dispatcher)
 # ============================================================================
 
-log "Attempting to send to Telegram..."
+log "Sending notifications..."
 
-# Create a compact version for Telegram (character limit)
-TELEGRAM_MSG=$(cat << EOF
-HYDRA Standup $DATE
-
-Agents: $(echo "$WORKLOAD" | tr '\n' ' ')
-
-Done: $COMPLETED_COUNT | WIP: $IN_PROGRESS_COUNT | Blocked: $BLOCKED_COUNT
-
-$(if [[ "$URGENT_NOTIF" -gt 0 ]]; then echo "URGENT: $URGENT_NOTIF notifications"; fi)
-$(if [[ -n "$AUTOMATION_FINDINGS" ]]; then echo -e "\nSignals:\n$AUTOMATION_FINDINGS"; fi)
-
-Full report: ~/.hydra/logs/standups/standup-$DATE.md
-EOF
-)
-
-# Try to send via OpenClaw (if gateway is running)
-# Note: OpenClaw gateway token from environment or config
-OPENCLAW_TOKEN="${OPENCLAW_GATEWAY_TOKEN:-}"
-
-if curl -s --connect-timeout 2 "$OPENCLAW_GATEWAY/health" &>/dev/null 2>&1; then
-    log "OpenClaw gateway available, attempting send..."
-    # For now, just log - actual Telegram integration requires OpenClaw API setup
-    log "Standup ready for Telegram (manual send or OpenClaw integration needed)"
-else
-    log "OpenClaw gateway not available, standup saved to file only"
+# Create a compact message for notifications
+STANDUP_MSG="Done: $COMPLETED_COUNT | WIP: $IN_PROGRESS_COUNT | Blocked: $BLOCKED_COUNT"
+if [[ "$URGENT_NOTIF" -gt 0 ]]; then
+    STANDUP_MSG="$STANDUP_MSG | URGENT: $URGENT_NOTIF"
 fi
 
-# macOS notification as fallback
-if command -v terminal-notifier &> /dev/null; then
-    terminal-notifier -title "HYDRA Daily Standup" \
-        -message "Done: $COMPLETED_COUNT | WIP: $IN_PROGRESS_COUNT | Blocked: $BLOCKED_COUNT" \
-        -sound default \
-        -open "file://$STANDUP_FILE" 2>/dev/null || true
+# Determine priority based on content
+NOTIFY_PRIORITY="normal"
+if [[ "$URGENT_NOTIF" -gt 0 ]]; then
+    NOTIFY_PRIORITY="urgent"
+elif [[ "$BLOCKED_COUNT" -gt 0 ]]; then
+    NOTIFY_PRIORITY="high"
+fi
+
+# Use centralized notification dispatcher
+NOTIFY_SCRIPT="$HOME/.hydra/daemons/notify-eddie.sh"
+if [[ -x "$NOTIFY_SCRIPT" ]]; then
+    "$NOTIFY_SCRIPT" "$NOTIFY_PRIORITY" "HYDRA Daily Standup" "$STANDUP_MSG" "$STANDUP_FILE" 2>/dev/null || true
+    log "Notification dispatched via notify-eddie.sh (priority: $NOTIFY_PRIORITY)"
+else
+    # Fallback to direct terminal-notifier
+    if command -v terminal-notifier &> /dev/null; then
+        terminal-notifier -title "HYDRA Daily Standup" \
+            -message "$STANDUP_MSG" \
+            -sound default \
+            -open "file://$STANDUP_FILE" 2>/dev/null || true
+        log "Fallback: macOS notification sent"
+    fi
 fi
 
 # ============================================================================
