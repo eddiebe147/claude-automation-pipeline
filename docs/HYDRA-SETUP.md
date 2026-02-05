@@ -100,10 +100,47 @@ sqlite3 ~/.hydra/hydra.db "SELECT * FROM v_pending_notifications;"
 
 HYDRA agent sessions will be registered with the OpenClaw gateway. Each agent workspace (`~/.hydra/sessions/{agent}/`) contains the personality files that OpenClaw loads on session start.
 
+## CLI Commands
+
+The `hydra` CLI is available after setup:
+
+```bash
+hydra status              # Show system status and agent workload
+hydra agents              # List all agents
+hydra tasks [agent]       # List tasks (optionally filter by agent)
+hydra task create         # Interactive task creation
+hydra notify @agent msg   # Send notification to agent
+hydra route "message"     # Route message with @mentions
+hydra standup             # Generate daily standup
+hydra notifications       # Show pending notifications
+hydra activity [n]        # Show recent activity
+```
+
+### Examples
+
+```bash
+# Route a message with @mentions
+hydra route "Hey @forge can you fix the auth bug? It's urgent!"
+
+# Create a task interactively
+hydra task create
+
+# Check agent workload
+hydra status
+```
+
+## Launchd Jobs
+
+| Job | Schedule | Purpose |
+|-----|----------|---------|
+| com.hydra.sync | 8:30 AM daily | Sync automation findings to tasks |
+| com.hydra.notification-check | Every 5 min | Check/alert urgent notifications |
+
 ## Related Files
 
 - `scripts/hydra-sync.sh` - Automation sync script (this repo)
 - `~/.hydra/` - HYDRA configuration (outside repo)
+- `~/.hydra/tools/hydra-cli.sh` - CLI tool (symlinked to ~/.local/bin/hydra)
 - `~/.openclaw/` - OpenClaw configuration (outside repo)
 
 ## Background
