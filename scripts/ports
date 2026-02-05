@@ -1,0 +1,130 @@
+#!/bin/bash
+# ports - Quick port management for development
+# Usage: ports [action] [port]
+#
+# Examples:
+#   ports                   # Show what's running on common dev ports
+#   ports kill 3000         # Kill process on port 3000
+#   ports kill all          # Kill all common dev server ports
+#   ports free              # Same as 'kill all'
+#
+# This replaces: lsof -ti:3000 | xargs kill -9
+
+set -e
+
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# Common development ports
+COMMON_PORTS=(3000 3001 3002 4000 5000 5173 5174 8000 8080 8888 9000)
+
+# Show what's running on a port
+show_port() {
+    local port="$1"
+    local pid=$(lsof -ti:$port 2>/dev/null || true)
+
+    if [[ -n "$pid" ]]; then
+        local cmd=$(ps -p $pid -o comm= 2>/dev/null || echo "unknown")
+        echo -e "  :$port  ${GREEN}[USED]${NC}  PID: $pid ($cmd)"
+        return 0
+    else
+        echo -e "  :$port  ${YELLOW}[FREE]${NC}"
+        return 1
+    fi
+}
+
+# Kill process on a port
+kill_port() {
+    local port="$1"
+    local pid=$(lsof -ti:$port 2>/dev/null || true)
+
+    if [[ -n "$pid" ]]; then
+        local cmd=$(ps -p $pid -o comm= 2>/dev/null || echo "unknown")
+        echo -e "${YELLOW}Killing${NC} process on :$port (PID: $pid, $cmd)"
+        kill -9 $pid 2>/dev/null || true
+        sleep 0.5
+
+        # Verify
+        local check=$(lsof -ti:$port 2>/dev/null || true)
+        if [[ -z "$check" ]]; then
+            echo -e "${GREEN}[OK]${NC} Port $port is now free"
+        else
+            echo -e "${RED}[FAIL]${NC} Could not free port $port"
+        fi
+    else
+        echo -e "${BLUE}Port $port is already free${NC}"
+    fi
+}
+
+# Show all common ports
+show_all() {
+    echo -e "${BLUE}Development Ports Status:${NC}"
+    echo ""
+
+    local used=0
+    for port in "${COMMON_PORTS[@]}"; do
+        if show_port "$port" | grep -q "USED"; then
+            ((used++))
+        fi
+    done
+
+    echo ""
+    if [[ $used -gt 0 ]]; then
+        echo -e "Found ${YELLOW}$used${NC} ports in use"
+        echo "Run 'ports kill <port>' or 'ports free' to release"
+    else
+        echo -e "${GREEN}All common ports are free${NC}"
+    fi
+}
+
+# Kill all common ports
+kill_all() {
+    echo -e "${BLUE}Freeing all development ports...${NC}"
+    echo ""
+
+    for port in "${COMMON_PORTS[@]}"; do
+        local pid=$(lsof -ti:$port 2>/dev/null || true)
+        if [[ -n "$pid" ]]; then
+            kill_port "$port"
+        fi
+    done
+
+    echo ""
+    echo -e "${GREEN}Done.${NC} All common dev ports should be free."
+}
+
+# Main
+ACTION="${1:-show}"
+PORT="${2:-}"
+
+case "$ACTION" in
+    show|status|list|"")
+        show_all
+        ;;
+    kill|stop|free)
+        if [[ "$PORT" == "all" ]] || [[ -z "$PORT" ]]; then
+            kill_all
+        else
+            kill_port "$PORT"
+        fi
+        ;;
+    check)
+        if [[ -n "$PORT" ]]; then
+            show_port "$PORT"
+        else
+            show_all
+        fi
+        ;;
+    *)
+        echo "Usage: ports [show|kill|free] [port|all]"
+        echo ""
+        echo "Commands:"
+        echo "  show          Show status of common dev ports (default)"
+        echo "  kill <port>   Kill process on specific port"
+        echo "  kill all      Kill all processes on common dev ports"
+        echo "  free          Same as 'kill all'"
+        ;;
+esac
