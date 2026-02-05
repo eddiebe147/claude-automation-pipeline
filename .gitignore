@@ -5,6 +5,9 @@
 *.key
 secrets.json
 CLAUDE_API_KEY
+telegram.env
+**/telegram.env
+credentials/
 
 # Reports and logs
 reports/
