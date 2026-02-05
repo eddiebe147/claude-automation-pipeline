@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eddie's Automation Empire - Subway Map</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-panel: #12121a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --line-business: #ff6b6b;
+            --line-hydra: #00d4ff;
+            --line-automation: #90ff90;
+            --line-infrastructure: #ffc107;
+            --line-communication: #9b59b6;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--line-hydra);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        /* Map Container */
+        .map-container {
+            flex: 1;
+            position: relative;
+            overflow: auto;
+        }
+
+        #subway-map {
+            width: 100%;
+            height: 100%;
+            min-width: 1000px;
+            min-height: 700px;
+        }
+
+        /* SVG Styles */
+        .subway-line {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .station {
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .station:hover {
+            transform: scale(1.2);
+        }
+
+        .station-dot {
+            stroke: var(--bg-dark);
+            stroke-width: 2;
+        }
+
+        .station-dot.transfer {
+            stroke-width: 3;
+        }
+
+        .station-label {
+            font-size: 11px;
+            fill: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Freshness animations */
+        .freshness-hot .station-dot {
+            animation: pulse-hot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-hot {
+            0%, 100% {
+                filter: drop-shadow(0 0 4px currentColor);
+            }
+            50% {
+                filter: drop-shadow(0 0 12px currentColor) drop-shadow(0 0 20px currentColor);
+            }
+        }
+
+        .freshness-warm .station-dot {
+            filter: drop-shadow(0 0 6px currentColor);
+        }
+
+        .freshness-cool .station-dot {
+            opacity: 0.7;
+        }
+
+        .freshness-stale .station-dot {
+            opacity: 0.4;
+            filter: grayscale(0.5);
+        }
+
+        /* Legend */
+        .legend {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--bg-panel);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .legend h3 {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 4px 8px;
+            margin: -4px -8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .legend-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .legend-line {
+            width: 30px;
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        .legend-label {
+            font-size: 0.85rem;
+        }
+
+        /* Freshness Legend */
+        .freshness-legend {
+            position: fixed;
+            bottom: 20px;
+            left: 200px;
+            background: var(--bg-panel);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .freshness-items {
+            display: flex;
+            gap: 15px;
+        }
+
+        .freshness-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .freshness-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .freshness-dot.hot {
+            background: var(--line-business);
+            box-shadow: 0 0 8px var(--line-business);
+        }
+
+        .freshness-dot.warm {
+            background: #ff9f43;
+            box-shadow: 0 0 4px #ff9f43;
+        }
+
+        .freshness-dot.cool {
+            background: #54a0ff;
+            opacity: 0.7;
+        }
+
+        .freshness-dot.stale {
+            background: #636e72;
+            opacity: 0.5;
+        }
+
+        .freshness-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Detail Panel */
+        .detail-panel {
+            width: 380px;
+            background: var(--bg-panel);
+            border-left: 1px solid rgba(255,255,255,0.1);
+            padding: 25px;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .detail-panel.open {
+            transform: translateX(0);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .panel-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .panel-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .panel-close:hover {
+            color: var(--text-primary);
+        }
+
+        .panel-section {
+            margin-bottom: 20px;
+        }
+
+        .panel-section h4 {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tech-tag {
+            background: rgba(255,255,255,0.1);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .commit-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .commit-item {
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid var(--line-hydra);
+        }
+
+        .commit-hash {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.75rem;
+            color: var(--line-hydra);
+            margin-bottom: 4px;
+        }
+
+        .commit-message {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .commit-meta {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Grouped station children */
+        .children-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .child-item {
+            background: rgba(255,255,255,0.05);
+            padding: 10px 12px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .child-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .child-schedule {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+
+        /* Agent stats */
+        .agent-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .agent-stat {
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .agent-stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--line-hydra);
+        }
+
+        .agent-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        /* Status indicator */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background: rgba(144, 255, 144, 0.2);
+            color: var(--line-automation);
+        }
+
+        .status-badge.hot {
+            background: rgba(255, 107, 107, 0.2);
+            color: var(--line-business);
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        /* Last updated */
+        .last-updated {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .refresh-btn {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--text-secondary);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background: var(--bg-panel);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+        }
+
+        .tooltip-name {
+            font-weight: 600;
+        }
+
+        .tooltip-activity {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Eddie's Automation Empire</h1>
+        <div class="header-stats">
+            <div class="stat">
+                <div class="stat-value" id="stat-stations">--</div>
+                <div class="stat-label">Stations</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="stat-jobs">--</div>
+                <div class="stat-label">Jobs</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="stat-tasks">--</div>
+                <div class="stat-label">Tasks</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="map-container">
+            <svg id="subway-map"></svg>
+        </div>
+        <div class="detail-panel" id="detail-panel">
+            <div class="panel-header">
+                <div>
+                    <div class="panel-title" id="panel-title">Station Name</div>
+                    <div class="panel-subtitle" id="panel-subtitle">Description</div>
+                </div>
+                <button class="panel-close" id="panel-close">&times;</button>
+            </div>
+            <div id="panel-content"></div>
+        </div>
+    </div>
+
+    <div class="legend">
+        <h3>Lines</h3>
+        <div class="legend-items" id="legend-items"></div>
+    </div>
+
+    <div class="freshness-legend">
+        <h3>Activity</h3>
+        <div class="freshness-items">
+            <div class="freshness-item">
+                <div class="freshness-dot hot"></div>
+                <span class="freshness-label">&lt;24h</span>
+            </div>
+            <div class="freshness-item">
+                <div class="freshness-dot warm"></div>
+                <span class="freshness-label">&lt;3d</span>
+            </div>
+            <div class="freshness-item">
+                <div class="freshness-dot cool"></div>
+                <span class="freshness-label">&lt;7d</span>
+            </div>
+            <div class="freshness-item">
+                <div class="freshness-dot stale"></div>
+                <span class="freshness-label">7d+</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="last-updated">
+        Last updated: <span id="last-updated">--</span>
+        <button class="refresh-btn" id="refresh-btn">Refresh</button>
+    </div>
+
+    <div class="tooltip" id="tooltip">
+        <div class="tooltip-name"></div>
+        <div class="tooltip-activity"></div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // Eddie's Automation Empire - Subway Map Dashboard
+        // ============================================================================
+        // Security Note: All dynamic content is sourced from our own empire-data.json
+        // file generated by generate-empire-data.sh. No user input is rendered.
+        // All text content is escaped via escapeHtml() before DOM insertion.
+        // ============================================================================
+
+        // Configuration
+        const CONFIG = {
+            gridSize: 10,
+            stationRadius: 8,
+            transferRadius: 12,
+            lineWidth: 8,
+            labelOffset: 15,
+            margin: { top: 60, right: 40, bottom: 60, left: 40 }
+        };
+
+        // Station positions (grid-based, Vignelli-style)
+        // Positions are in grid units, multiplied by gridSize
+        const STATION_POSITIONS = {
+            // Business Empire Line (horizontal, top)
+            'homer': { x: 10, y: 8 },
+            'x-place': { x: 20, y: 8 },
+            'pura-vida': { x: 30, y: 8 },
+            'id8': { x: 40, y: 8 },
+            'stitch': { x: 50, y: 8 },
+
+            // HYDRA Network (diagonal from homer)
+            'milo': { x: 15, y: 18 },
+            'forge': { x: 25, y: 18 },
+            'scout': { x: 35, y: 18 },
+            'pulse': { x: 45, y: 18 },
+            'telegram': { x: 55, y: 13 },  // Transfer point
+
+            // Automation Subway (horizontal, middle)
+            'morning-jobs': { x: 10, y: 30 },
+            'health-monitors': { x: 22, y: 30 },
+            'hydra-ops': { x: 34, y: 30 },
+            'evening-jobs': { x: 46, y: 30 },
+
+            // Infrastructure (vertical, left side)
+            'mac-studio': { x: 8, y: 15 },
+            'claude-code': { x: 8, y: 22 },
+            'supabase': { x: 8, y: 38 },
+            'vercel': { x: 8, y: 45 },
+
+            // Communication (bottom right, angled)
+            'twitter': { x: 58, y: 25 },
+            'linkedin': { x: 65, y: 32 },
+            'discord': { x: 72, y: 39 }
+        };
+
+        // Line paths (sequence of station IDs)
+        const LINE_PATHS = {
+            business: ['homer', 'x-place', 'pura-vida', 'id8', 'stitch'],
+            hydra: ['milo', 'forge', 'scout', 'pulse', 'telegram'],
+            automation: ['morning-jobs', 'health-monitors', 'hydra-ops', 'evening-jobs'],
+            infrastructure: ['mac-studio', 'claude-code', 'supabase', 'vercel'],
+            communication: ['telegram', 'twitter', 'linkedin', 'discord']
+        };
+
+        // State
+        let empireData = null;
+        let selectedStation = null;
+        let highlightedLine = null;
+
+        // ============================================================================
+        // Utilities - HTML Escaping for Security
+        // ============================================================================
+
+        function escapeHtml(text) {
+            if (typeof text !== 'string') return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateStr) {
+            try {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString();
+            } catch {
+                return dateStr;
+            }
+        }
+
+        function formatTimeAgo(date) {
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(minutes / 60);
+
+            if (minutes < 1) return 'just now';
+            if (minutes < 60) return minutes + 'm ago';
+            if (hours < 24) return hours + 'h ago';
+            return date.toLocaleDateString();
+        }
+
+        // ============================================================================
+        // Safe DOM Building Helpers
+        // ============================================================================
+
+        function createEl(tag, attrs = {}, children = []) {
+            const el = document.createElement(tag);
+            for (const [key, value] of Object.entries(attrs)) {
+                if (key === 'className') {
+                    el.className = value;
+                } else if (key === 'style' && typeof value === 'object') {
+                    Object.assign(el.style, value);
+                } else if (key === 'textContent') {
+                    el.textContent = value;
+                } else {
+                    el.setAttribute(key, value);
+                }
+            }
+            for (const child of children) {
+                if (typeof child === 'string') {
+                    el.appendChild(document.createTextNode(child));
+                } else if (child) {
+                    el.appendChild(child);
+                }
+            }
+            return el;
+        }
+
+        // ============================================================================
+        // Data Loading
+        // ============================================================================
+
+        async function loadData() {
+            try {
+                const response = await fetch('empire-data.json');
+                empireData = await response.json();
+
+                // Update stats using textContent (safe)
+                document.getElementById('stat-stations').textContent = empireData.stats.totalStations;
+                document.getElementById('stat-jobs').textContent = empireData.stats.totalJobs;
+                document.getElementById('stat-tasks').textContent = empireData.stats.tasks.pending + empireData.stats.tasks.inProgress;
+
+                // Update timestamp
+                const date = new Date(empireData.generated);
+                document.getElementById('last-updated').textContent = formatTimeAgo(date);
+
+                renderMap();
+                renderLegend();
+            } catch (error) {
+                console.error('Failed to load empire data:', error);
+            }
+        }
+
+        // ============================================================================
+        // Map Rendering
+        // ============================================================================
+
+        function renderMap() {
+            const svg = d3.select('#subway-map');
+            const container = document.querySelector('.map-container');
+            const width = Math.max(container.clientWidth, 900);
+            const height = Math.max(container.clientHeight, 600);
+
+            svg.attr('width', width).attr('height', height);
+            svg.selectAll('*').remove();
+
+            const g = svg.append('g')
+                .attr('transform', 'translate(' + CONFIG.margin.left + ', ' + CONFIG.margin.top + ')');
+
+            // Create line groups (drawn first, under stations)
+            const linesGroup = g.append('g').attr('class', 'lines');
+            const stationsGroup = g.append('g').attr('class', 'stations');
+
+            // Draw lines
+            Object.entries(LINE_PATHS).forEach(function([lineId, stationIds]) {
+                const lineData = empireData.lines[lineId];
+                const pathData = generateLinePath(stationIds);
+
+                linesGroup.append('path')
+                    .attr('class', 'subway-line line-' + lineId)
+                    .attr('d', pathData)
+                    .attr('stroke', lineData.color)
+                    .attr('opacity', highlightedLine && highlightedLine !== lineId ? 0.2 : 1);
+            });
+
+            // Draw stations
+            empireData.stations.forEach(function(station) {
+                const pos = STATION_POSITIONS[station.id];
+                if (!pos) return;
+
+                const x = pos.x * CONFIG.gridSize;
+                const y = pos.y * CONFIG.gridSize;
+                const isTransfer = isTransferStation(station.id);
+                const radius = isTransfer ? CONFIG.transferRadius : CONFIG.stationRadius;
+                const lineData = empireData.lines[station.line];
+
+                const stationGroup = stationsGroup.append('g')
+                    .attr('class', 'station freshness-' + station.freshness)
+                    .attr('transform', 'translate(' + x + ', ' + y + ')')
+                    .attr('data-id', station.id)
+                    .on('click', function() { selectStation(station); })
+                    .on('mouseenter', function(event) { showTooltip(event, station); })
+                    .on('mouseleave', hideTooltip);
+
+                // Station dot
+                stationGroup.append('circle')
+                    .attr('class', 'station-dot' + (isTransfer ? ' transfer' : ''))
+                    .attr('r', radius)
+                    .attr('fill', lineData.color)
+                    .attr('opacity', highlightedLine && highlightedLine !== station.line ? 0.2 : 1);
+
+                // Station label
+                const labelPos = getLabelPosition(station.id);
+                stationGroup.append('text')
+                    .attr('class', 'station-label')
+                    .attr('x', labelPos.x)
+                    .attr('y', labelPos.y)
+                    .attr('text-anchor', labelPos.anchor)
+                    .attr('dominant-baseline', labelPos.baseline)
+                    .attr('opacity', highlightedLine && highlightedLine !== station.line ? 0.3 : 1)
+                    .text(station.name);
+            });
+        }
+
+        function generateLinePath(stationIds) {
+            const points = stationIds
+                .map(function(id) { return STATION_POSITIONS[id]; })
+                .filter(Boolean)
+                .map(function(pos) {
+                    return {
+                        x: pos.x * CONFIG.gridSize,
+                        y: pos.y * CONFIG.gridSize
+                    };
+                });
+
+            if (points.length < 2) return '';
+
+            // Generate path with 45-degree angles (Vignelli style)
+            let path = 'M ' + points[0].x + ' ' + points[0].y;
+
+            for (let i = 1; i < points.length; i++) {
+                const prev = points[i - 1];
+                const curr = points[i];
+                const dx = curr.x - prev.x;
+                const dy = curr.y - prev.y;
+
+                // For diagonal connections, use 45-degree angles
+                if (Math.abs(dx) > 0 && Math.abs(dy) > 0) {
+                    // Calculate intermediate point for 45-degree turn
+                    const minDelta = Math.min(Math.abs(dx), Math.abs(dy));
+                    const midX = prev.x + (dx > 0 ? minDelta : -minDelta);
+                    const midY = prev.y + (dy > 0 ? minDelta : -minDelta);
+
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        // Horizontal first, then diagonal
+                        path += ' L ' + midX + ' ' + prev.y + ' L ' + curr.x + ' ' + curr.y;
+                    } else {
+                        // Diagonal first
+                        path += ' L ' + midX + ' ' + midY + ' L ' + curr.x + ' ' + curr.y;
+                    }
+                } else {
+                    // Straight line
+                    path += ' L ' + curr.x + ' ' + curr.y;
+                }
+            }
+
+            return path;
+        }
+
+        function isTransferStation(stationId) {
+            // Stations that appear on multiple lines
+            return stationId === 'telegram';
+        }
+
+        function getLabelPosition(stationId) {
+            // Custom label positions to avoid overlaps
+            const positions = {
+                'homer': { x: 0, y: -15, anchor: 'middle', baseline: 'auto' },
+                'x-place': { x: 0, y: -15, anchor: 'middle', baseline: 'auto' },
+                'pura-vida': { x: 0, y: -15, anchor: 'middle', baseline: 'auto' },
+                'id8': { x: 0, y: -15, anchor: 'middle', baseline: 'auto' },
+                'stitch': { x: 0, y: -15, anchor: 'middle', baseline: 'auto' },
+                'milo': { x: 0, y: 20, anchor: 'middle', baseline: 'hanging' },
+                'forge': { x: 0, y: 20, anchor: 'middle', baseline: 'hanging' },
+                'scout': { x: 0, y: 20, anchor: 'middle', baseline: 'hanging' },
+                'pulse': { x: 0, y: 20, anchor: 'middle', baseline: 'hanging' },
+                'telegram': { x: 15, y: 0, anchor: 'start', baseline: 'middle' },
+                'morning-jobs': { x: 0, y: -15, anchor: 'middle', baseline: 'auto' },
+                'health-monitors': { x: 0, y: -15, anchor: 'middle', baseline: 'auto' },
+                'hydra-ops': { x: 0, y: -15, anchor: 'middle', baseline: 'auto' },
+                'evening-jobs': { x: 0, y: -15, anchor: 'middle', baseline: 'auto' },
+                'mac-studio': { x: -15, y: 0, anchor: 'end', baseline: 'middle' },
+                'claude-code': { x: -15, y: 0, anchor: 'end', baseline: 'middle' },
+                'supabase': { x: -15, y: 0, anchor: 'end', baseline: 'middle' },
+                'vercel': { x: -15, y: 0, anchor: 'end', baseline: 'middle' },
+                'twitter': { x: 15, y: 0, anchor: 'start', baseline: 'middle' },
+                'linkedin': { x: 15, y: 0, anchor: 'start', baseline: 'middle' },
+                'discord': { x: 15, y: 0, anchor: 'start', baseline: 'middle' }
+            };
+
+            return positions[stationId] || { x: 0, y: -15, anchor: 'middle', baseline: 'auto' };
+        }
+
+        // ============================================================================
+        // Legend (using safe DOM methods)
+        // ============================================================================
+
+        function renderLegend() {
+            const container = document.getElementById('legend-items');
+            container.replaceChildren(); // Clear safely
+
+            Object.entries(empireData.lines).forEach(function([lineId, lineData]) {
+                const item = createEl('div', { className: 'legend-item' }, [
+                    createEl('div', {
+                        className: 'legend-line',
+                        style: { background: lineData.color }
+                    }),
+                    createEl('span', { className: 'legend-label', textContent: lineData.name })
+                ]);
+                item.addEventListener('click', function() { toggleLineHighlight(lineId); });
+                container.appendChild(item);
+            });
+        }
+
+        function toggleLineHighlight(lineId) {
+            highlightedLine = highlightedLine === lineId ? null : lineId;
+            renderMap();
+        }
+
+        // ============================================================================
+        // Detail Panel (using safe DOM methods)
+        // ============================================================================
+
+        function selectStation(station) {
+            selectedStation = station;
+            const panel = document.getElementById('detail-panel');
+
+            document.getElementById('panel-title').textContent = station.name;
+            document.getElementById('panel-subtitle').textContent = station.description || '';
+
+            const content = document.getElementById('panel-content');
+            content.replaceChildren(); // Clear safely
+
+            // Type-specific content
+            if (station.type === 'project') {
+                renderProjectPanel(content, station);
+            } else if (station.type === 'agent') {
+                renderAgentPanel(content, station);
+            } else if (station.type === 'grouped') {
+                renderGroupedPanel(content, station);
+            } else {
+                renderGenericPanel(content, station);
+            }
+
+            panel.classList.add('open');
+            gsap.from('#panel-content', { opacity: 0, y: 20, duration: 0.3 });
+        }
+
+        function renderProjectPanel(content, station) {
+            // Status badge section
+            const statusSection = createEl('div', { className: 'panel-section' }, [
+                createEl('span', {
+                    className: 'status-badge ' + station.freshness,
+                    textContent: station.freshness === 'hot' ? 'Active' : 'Status: ' + station.freshness
+                })
+            ]);
+            content.appendChild(statusSection);
+
+            // Tech stack
+            if (station.techStack && station.techStack.length) {
+                const techSection = createEl('div', { className: 'panel-section' });
+                techSection.appendChild(createEl('h4', { textContent: 'Tech Stack' }));
+
+                const techStack = createEl('div', { className: 'tech-stack' });
+                station.techStack.forEach(function(tech) {
+                    techStack.appendChild(createEl('span', {
+                        className: 'tech-tag',
+                        textContent: tech
+                    }));
+                });
+                techSection.appendChild(techStack);
+                content.appendChild(techSection);
+            }
+
+            // Git info
+            if (station.git && station.git.recentCommits) {
+                const gitSection = createEl('div', { className: 'panel-section' });
+                gitSection.appendChild(createEl('h4', {
+                    textContent: 'Recent Commits (' + station.git.commits7d + ' this week)'
+                }));
+
+                const commitList = createEl('div', { className: 'commit-list' });
+                station.git.recentCommits.slice(0, 5).forEach(function(c) {
+                    const commitItem = createEl('div', { className: 'commit-item' }, [
+                        createEl('div', { className: 'commit-hash', textContent: c.hash }),
+                        createEl('div', { className: 'commit-message', textContent: c.message }),
+                        createEl('div', {
+                            className: 'commit-meta',
+                            textContent: c.author + ' - ' + formatDate(c.date)
+                        })
+                    ]);
+                    commitList.appendChild(commitItem);
+                });
+                gitSection.appendChild(commitList);
+                content.appendChild(gitSection);
+            }
+        }
+
+        function renderAgentPanel(content, station) {
+            // Status section
+            const statusSection = createEl('div', { className: 'panel-section' });
+            statusSection.appendChild(createEl('span', {
+                className: 'status-badge ' + (station.status === 'active' ? 'active' : ''),
+                textContent: station.status
+            }));
+
+            const details = createEl('div', {
+                style: { marginTop: '10px', color: 'var(--text-secondary)', fontSize: '0.85rem' }
+            });
+            details.appendChild(document.createTextNode('Role: ' + station.role));
+            details.appendChild(document.createElement('br'));
+            details.appendChild(document.createTextNode('Model: ' + (station.model ? station.model.split('/').pop() : 'N/A')));
+            details.appendChild(document.createElement('br'));
+            details.appendChild(document.createTextNode('Cost: ' + station.costTier));
+            statusSection.appendChild(details);
+            content.appendChild(statusSection);
+
+            // Task stats
+            const statsSection = createEl('div', { className: 'panel-section' });
+            statsSection.appendChild(createEl('h4', { textContent: 'Task Stats' }));
+
+            const statsGrid = createEl('div', { className: 'agent-stats' });
+            [
+                { value: station.pendingTasks || 0, label: 'Pending' },
+                { value: station.inProgressTasks || 0, label: 'In Progress' },
+                { value: station.completedToday || 0, label: 'Today' }
+            ].forEach(function(stat) {
+                statsGrid.appendChild(createEl('div', { className: 'agent-stat' }, [
+                    createEl('div', { className: 'agent-stat-value', textContent: stat.value }),
+                    createEl('div', { className: 'agent-stat-label', textContent: stat.label })
+                ]));
+            });
+            statsSection.appendChild(statsGrid);
+            content.appendChild(statsSection);
+
+            // Last heartbeat
+            if (station.lastHeartbeat) {
+                const heartbeatSection = createEl('div', { className: 'panel-section' });
+                heartbeatSection.appendChild(createEl('h4', { textContent: 'Last Heartbeat' }));
+                heartbeatSection.appendChild(createEl('div', {
+                    style: { color: 'var(--text-secondary)' },
+                    textContent: station.lastHeartbeat
+                }));
+                content.appendChild(heartbeatSection);
+            }
+        }
+
+        function renderGroupedPanel(content, station) {
+            if (!station.children || !station.children.length) {
+                content.appendChild(createEl('p', {
+                    style: { color: 'var(--text-secondary)' },
+                    textContent: 'No jobs in this group.'
+                }));
+                return;
+            }
+
+            const jobsSection = createEl('div', { className: 'panel-section' });
+            jobsSection.appendChild(createEl('h4', {
+                textContent: 'Jobs (' + station.children.length + ')'
+            }));
+
+            const childrenList = createEl('div', { className: 'children-list' });
+            station.children.forEach(function(job) {
+                const labelText = job.label.replace(/^com\.(id8labs|hydra|eddieb|homer)\./, '');
+                childrenList.appendChild(createEl('div', { className: 'child-item' }, [
+                    createEl('span', { className: 'child-label', textContent: labelText }),
+                    createEl('span', { className: 'child-schedule', textContent: job.schedule })
+                ]));
+            });
+            jobsSection.appendChild(childrenList);
+            content.appendChild(jobsSection);
+        }
+
+        function renderGenericPanel(content, station) {
+            const section = createEl('div', { className: 'panel-section' });
+            section.appendChild(createEl('span', {
+                className: 'status-badge ' + station.freshness,
+                textContent: station.freshness
+            }));
+            content.appendChild(section);
+        }
+
+        function closePanel() {
+            document.getElementById('detail-panel').classList.remove('open');
+            selectedStation = null;
+        }
+
+        // ============================================================================
+        // Tooltip (using safe textContent)
+        // ============================================================================
+
+        function showTooltip(event, station) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.querySelector('.tooltip-name').textContent = station.name;
+            tooltip.querySelector('.tooltip-activity').textContent = 'Activity: ' + station.freshness;
+
+            const rect = event.target.getBoundingClientRect();
+            tooltip.style.left = (rect.left + rect.width / 2) + 'px';
+            tooltip.style.top = (rect.top - 10) + 'px';
+            tooltip.style.transform = 'translate(-50%, -100%)';
+            tooltip.classList.add('visible');
+        }
+
+        function hideTooltip() {
+            document.getElementById('tooltip').classList.remove('visible');
+        }
+
+        // ============================================================================
+        // Keyboard Navigation
+        // ============================================================================
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closePanel();
+            }
+        });
+
+        // ============================================================================
+        // Initialize
+        // ============================================================================
+
+        document.getElementById('panel-close').addEventListener('click', closePanel);
+        document.getElementById('refresh-btn').addEventListener('click', function() {
+            loadData();
+        });
+
+        // Load data on page load
+        loadData();
+
+        // Resize handler
+        window.addEventListener('resize', function() {
+            if (empireData) renderMap();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,680 @@
+{
+  "generated": "2026-02-05T17:30:06Z",
+  "generatedLocal": "2026-02-05 12:30:06",
+  "lines": {
+    "business": {
+      "name": "Business Empire",
+      "color": "#ff6b6b",
+      "description": "Revenue-generating projects"
+    },
+    "hydra": {
+      "name": "HYDRA Network",
+      "color": "#00d4ff",
+      "description": "AI agent coordination"
+    },
+    "automation": {
+      "name": "Automation Subway",
+      "color": "#90ff90",
+      "description": "Scheduled automation jobs"
+    },
+    "infrastructure": {
+      "name": "Infrastructure",
+      "color": "#ffc107",
+      "description": "Core infrastructure services"
+    },
+    "communication": {
+      "name": "Communication",
+      "color": "#9b59b6",
+      "description": "Communication channels"
+    }
+  },
+  "stations": [
+    {
+      "id": "homer",
+      "name": "Homer",
+      "type": "project",
+      "description": "Real Estate Platform",
+      "techStack": [
+        "next.js",
+        "supabase",
+        "typescript"
+      ],
+      "freshness": "warm",
+      "git": {
+        "lastCommit": {
+          "hash": "f3547294931463f3ed1740a9e16c6276c1220ddc",
+          "message": "feat: Upgrade CLAUDE.md with Karpathy + Anthropic team advanced patterns",
+          "date": "2026-02-03 15:21:48 -0500",
+          "author": "Eddie Belaval"
+        },
+        "commits7d": 7,
+        "recentCommits": [
+          {
+            "hash": "f354729",
+            "message": "feat: Upgrade CLAUDE.md with Karpathy + Anthropic team advanced patterns",
+            "author": "Eddie Belaval",
+            "date": "2026-02-03 15:21:48 -0500"
+          },
+          {
+            "hash": "0a0cdaf",
+            "message": "feat: Add CLAUDE.md for Codex automation compatibility",
+            "author": "Eddie Belaval",
+            "date": "2026-02-03 09:06:47 -0500"
+          },
+          {
+            "hash": "e3863f7",
+            "message": "chore: Add RLS policy optimization migrations (#82)",
+            "author": "id8Labs",
+            "date": "2026-02-02 00:26:40 -0500"
+          },
+          {
+            "hash": "fe9b6e2",
+            "message": "feat: Complete all 78 remaining skills for full SkillRouter parity (#81)",
+            "author": "id8Labs",
+            "date": "2026-02-02 00:24:30 -0500"
+          },
+          {
+            "hash": "a21d0cc",
+            "message": "feat(agent-sdk): Complete Agent SDK integration with document, calendar, party tools (#80)",
+            "author": "id8Labs",
+            "date": "2026-02-02 00:05:43 -0500"
+          }
+        ],
+        "freshness": "warm",
+        "branch": "main",
+        "uncommitted": 53
+      },
+      "line": "business"
+    },
+    {
+      "id": "x-place",
+      "name": "AIplaces",
+      "type": "project",
+      "description": "AI Art Marketplace",
+      "techStack": [
+        "next.js",
+        "supabase",
+        "stripe"
+      ],
+      "freshness": "hot",
+      "git": {
+        "lastCommit": {
+          "hash": "a5f1d7c5b3c13cc7b15dcf11c35b2f740099ec3a",
+          "message": "docs: Add mobile canvas gesture debugging patterns",
+          "date": "2026-02-05 09:14:58 -0500",
+          "author": "Eddie Belaval"
+        },
+        "commits7d": 162,
+        "recentCommits": [
+          {
+            "hash": "a5f1d7c",
+            "message": "docs: Add mobile canvas gesture debugging patterns",
+            "author": "Eddie Belaval",
+            "date": "2026-02-05 09:14:58 -0500"
+          },
+          {
+            "hash": "e3a99c9",
+            "message": "feat(aipainters): Add humorous typo correction overlay",
+            "author": "Eddie Belaval",
+            "date": "2026-02-05 00:42:53 -0500"
+          },
+          {
+            "hash": "482b051",
+            "message": "Remove debug scaffolding from canvas",
+            "author": "Eddie Belaval",
+            "date": "2026-02-05 00:42:53 -0500"
+          },
+          {
+            "hash": "f3cd67b",
+            "message": "Add double-tap zoom tip and ease pinch threshold",
+            "author": "Eddie Belaval",
+            "date": "2026-02-05 00:42:53 -0500"
+          },
+          {
+            "hash": "a843d32",
+            "message": "Clean up gesture debug UI and smooth pinch zoom",
+            "author": "Eddie Belaval",
+            "date": "2026-02-05 00:42:53 -0500"
+          }
+        ],
+        "freshness": "hot",
+        "branch": "main",
+        "uncommitted": 0
+      },
+      "line": "business"
+    },
+    {
+      "id": "pura-vida",
+      "name": "Pura Vida",
+      "type": "project",
+      "description": "Costa Rica Property",
+      "techStack": [
+        "next.js",
+        "typescript"
+      ],
+      "freshness": "warm",
+      "git": {
+        "lastCommit": {
+          "hash": "a94f7e74119984a127648497fadd18f88ae77c39",
+          "message": "Fix dialog open/close buttons not working",
+          "date": "2026-02-03 22:23:48 -0500",
+          "author": "Eddie Belaval"
+        },
+        "commits7d": 28,
+        "recentCommits": [
+          {
+            "hash": "a94f7e7",
+            "message": "Fix dialog open/close buttons not working",
+            "author": "Eddie Belaval",
+            "date": "2026-02-03 22:23:48 -0500"
+          },
+          {
+            "hash": "cb5073b",
+            "message": "Improve mobile UX: prominent close button with text label",
+            "author": "Eddie Belaval",
+            "date": "2026-02-03 22:18:11 -0500"
+          },
+          {
+            "hash": "42803e6",
+            "message": "Optimize main page for mobile",
+            "author": "Eddie Belaval",
+            "date": "2026-02-03 22:14:11 -0500"
+          },
+          {
+            "hash": "7d7f863",
+            "message": "Add clear test page banner - widget is the product",
+            "author": "Eddie Belaval",
+            "date": "2026-02-03 22:09:03 -0500"
+          },
+          {
+            "hash": "2432bdd",
+            "message": "Add full demo content to main page",
+            "author": "Eddie Belaval",
+            "date": "2026-02-03 22:07:56 -0500"
+          }
+        ],
+        "freshness": "warm",
+        "branch": "main",
+        "uncommitted": 0
+      },
+      "line": "business"
+    },
+    {
+      "id": "id8",
+      "name": "ID8Labs",
+      "type": "project",
+      "description": "Business Operations",
+      "techStack": [
+        "typescript",
+        "automation"
+      ],
+      "freshness": "stale",
+      "git": {
+        "lastCommit": {
+          "hash": "b0d53748becb251d266f52b8804143ed80670130",
+          "message": "feat(legal-monitor): Add Phase 4 CI/CD and rollback capability",
+          "date": "2026-01-29 02:08:18 -0500",
+          "author": "Eddie Belaval"
+        },
+        "commits7d": 0,
+        "recentCommits": [
+          {
+            "hash": "b0d5374",
+            "message": "feat(legal-monitor): Add Phase 4 CI/CD and rollback capability",
+            "author": "Eddie Belaval",
+            "date": "2026-01-29 02:08:18 -0500"
+          },
+          {
+            "hash": "2dc6a54",
+            "message": "feat(legal-monitor): Add Phase 3 LLM-powered agent implementations",
+            "author": "Eddie Belaval",
+            "date": "2026-01-29 01:28:27 -0500"
+          },
+          {
+            "hash": "a219bad",
+            "message": "feat(legal-monitor): Add Phase 2 multi-agent orchestration",
+            "author": "Eddie Belaval",
+            "date": "2026-01-29 01:24:27 -0500"
+          },
+          {
+            "hash": "a191f0c",
+            "message": "feat(florida-deal-counsel): Add self-healing legal knowledge monitor",
+            "author": "Eddie Belaval",
+            "date": "2026-01-29 01:18:44 -0500"
+          },
+          {
+            "hash": "0640720",
+            "message": "feat(homer): Add Florida Deal Counsel skill for real estate deal preparation",
+            "author": "Eddie Belaval",
+            "date": "2026-01-29 00:36:18 -0500"
+          }
+        ],
+        "freshness": "stale",
+        "branch": "feature/legal-knowledge-monitor",
+        "uncommitted": 18
+      },
+      "line": "business"
+    },
+    {
+      "id": "stitch",
+      "name": "Stitch",
+      "type": "project",
+      "description": "Content Pipeline",
+      "techStack": [
+        "typescript",
+        "automation"
+      ],
+      "freshness": "stale",
+      "git": {
+        "lastCommit": {
+          "hash": "fbb298f93946c28a982ec79d61d6764dabc900c1",
+          "message": "Update README to allow users select models for design generation",
+          "date": "2026-01-14 16:42:52 -0800",
+          "author": "jilinxia"
+        },
+        "commits7d": 0,
+        "recentCommits": [
+          {
+            "hash": "fbb298f",
+            "message": "Update README to allow users select models for design generation",
+            "author": "jilinxia",
+            "date": "2026-01-14 16:42:52 -0800"
+          },
+          {
+            "hash": "0c9a7d6",
+            "message": "Update doc to support ADC authentication for now, and update legal",
+            "author": "jilinxia",
+            "date": "2026-01-14 16:07:31 -0800"
+          },
+          {
+            "hash": "f3b3a98",
+            "message": "Merge pull request #5 from gemini-cli-extensions/david/enhance",
+            "author": "David East",
+            "date": "2026-01-13 20:55:26 -0500"
+          },
+          {
+            "hash": "1962e6e",
+            "message": "consolidate commands and update README.md",
+            "author": "implicitmutation",
+            "date": "2026-01-13 20:45:34 -0500"
+          },
+          {
+            "hash": "e22940c",
+            "message": "feat: add enhance command",
+            "author": "implicitmutation",
+            "date": "2026-01-13 19:51:47 -0500"
+          }
+        ],
+        "freshness": "stale",
+        "branch": "main",
+        "uncommitted": 0
+      },
+      "line": "business"
+    },
+    {
+      "id": "milo",
+      "name": "MILO",
+      "type": "agent",
+      "role": "coordinator",
+      "model": "anthropic/claude-sonnet-4-20250514",
+      "status": "active",
+      "lastHeartbeat": null,
+      "pendingTasks": 0,
+      "inProgressTasks": 1,
+      "completedToday": 0,
+      "costTier": "premium",
+      "freshness": "stale",
+      "line": "hydra"
+    },
+    {
+      "id": "forge",
+      "name": "FORGE",
+      "type": "agent",
+      "role": "dev",
+      "model": "synthetic/hf:deepseek-ai/DeepSeek-V3.2",
+      "status": "active",
+      "lastHeartbeat": null,
+      "pendingTasks": 0,
+      "inProgressTasks": 0,
+      "completedToday": 0,
+      "costTier": "cheap",
+      "freshness": "stale",
+      "line": "hydra"
+    },
+    {
+      "id": "scout",
+      "name": "SCOUT",
+      "type": "agent",
+      "role": "research",
+      "model": "synthetic/hf:Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "status": "active",
+      "lastHeartbeat": null,
+      "pendingTasks": 0,
+      "inProgressTasks": 0,
+      "completedToday": 0,
+      "costTier": "cheap",
+      "freshness": "stale",
+      "line": "hydra"
+    },
+    {
+      "id": "pulse",
+      "name": "PULSE",
+      "type": "agent",
+      "role": "ops",
+      "model": "synthetic/hf:meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+      "status": "active",
+      "lastHeartbeat": null,
+      "pendingTasks": 0,
+      "inProgressTasks": 0,
+      "completedToday": 0,
+      "costTier": "cheap",
+      "freshness": "stale",
+      "line": "hydra"
+    },
+    {
+      "id": "mac-studio",
+      "name": "Mac Studio",
+      "type": "infrastructure",
+      "description": "M2 Max - Primary dev machine",
+      "freshness": "hot",
+      "line": "infrastructure"
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code",
+      "type": "infrastructure",
+      "description": "AI pair programming environment",
+      "freshness": "hot",
+      "line": "infrastructure"
+    },
+    {
+      "id": "supabase",
+      "name": "Supabase",
+      "type": "infrastructure",
+      "description": "Database & auth platform",
+      "freshness": "warm",
+      "line": "infrastructure"
+    },
+    {
+      "id": "vercel",
+      "name": "Vercel",
+      "type": "infrastructure",
+      "description": "Frontend deployment platform",
+      "freshness": "warm",
+      "line": "infrastructure"
+    },
+    {
+      "id": "telegram",
+      "name": "Telegram Hub",
+      "type": "communication",
+      "description": "Two-way HYDRA control",
+      "freshness": "hot",
+      "line": "communication"
+    },
+    {
+      "id": "twitter",
+      "name": "Twitter/X",
+      "type": "communication",
+      "description": "@eddiebe147",
+      "freshness": "warm",
+      "line": "communication"
+    },
+    {
+      "id": "linkedin",
+      "name": "LinkedIn",
+      "type": "communication",
+      "description": "Professional network",
+      "freshness": "cool",
+      "line": "communication"
+    },
+    {
+      "id": "discord",
+      "name": "Discord",
+      "type": "communication",
+      "description": "Community channels",
+      "freshness": "cool",
+      "line": "communication"
+    },
+    {
+      "id": "morning-jobs",
+      "name": "Morning Jobs",
+      "type": "grouped",
+      "description": "Daily startup automation",
+      "freshness": "hot",
+      "line": "automation",
+      "children": [
+        {
+          "label": "com.id8labs.annual-report-reminder",
+          "comment": "",
+          "schedule": "09:00",
+          "script": "/Users/eddiebelaval/Documents/ID8Labs-LLC/Scripts/annual-report-reminder.sh"
+        },
+        {
+          "label": "com.id8labs.dependency-guardian",
+          "comment": "",
+          "schedule": "06:00",
+          "script": "/Users/eddiebelaval/Development/scripts/dependency-guardian.sh"
+        },
+        {
+          "label": "com.id8labs.gus-tracker",
+          "comment": "",
+          "schedule": "08:00",
+          "script": "/Users/eddiebelaval/Development/scripts/gus-tracker.sh"
+        },
+        {
+          "label": "com.id8labs.lighthouse-tracker",
+          "comment": "",
+          "schedule": "05:00",
+          "script": "/Users/eddiebelaval/Development/scripts/lighthouse-tracker.sh"
+        },
+        {
+          "label": "com.id8labs.marketing-check",
+          "comment": "",
+          "schedule": "11:00",
+          "script": "/Users/eddiebelaval/Development/scripts/marketing-check.sh"
+        },
+        {
+          "label": "com.id8labs.milo-sync",
+          "comment": "",
+          "schedule": "08:30",
+          "script": "/Users/eddiebelaval/Development/scripts/milo-sync.sh"
+        },
+        {
+          "label": "com.id8labs.morning-commitment",
+          "comment": "",
+          "schedule": "07:00",
+          "script": "/Users/eddiebelaval/Development/scripts/morning-commitment.sh"
+        },
+        {
+          "label": "com.id8labs.pipeline-monitor",
+          "comment": "",
+          "schedule": "09:00",
+          "script": ""
+        },
+        {
+          "label": "com.id8labs.seventy-percent-detector",
+          "comment": "",
+          "schedule": "08:00",
+          "script": "/Users/eddiebelaval/Development/scripts/seventy-percent-detector.sh"
+        },
+        {
+          "label": "com.id8labs.sunbiz-checker",
+          "comment": "",
+          "schedule": "09:00",
+          "script": "/Users/eddiebelaval/Development/id8/tools/llc-ops/scripts/check-sunbiz-filing.sh"
+        },
+        {
+          "label": "com.id8labs.weekly-retrospective",
+          "comment": "",
+          "schedule": "09:00",
+          "script": "/Users/eddiebelaval/Development/scripts/weekly-retrospective.sh"
+        },
+        {
+          "label": "com.eddieb.dev-health-analysis",
+          "comment": "",
+          "schedule": "06:00",
+          "script": "-c"
+        },
+        {
+          "label": "com.eddieb.dev-health-morning-report",
+          "comment": "",
+          "schedule": "07:00",
+          "script": ""
+        },
+        {
+          "label": "com.homer.e2e-daily",
+          "comment": "",
+          "schedule": "09:00",
+          "script": "/Users/eddiebelaval/Development/Homer/scripts/e2e/daily-e2e-test.sh"
+        }
+      ]
+    },
+    {
+      "id": "health-monitors",
+      "name": "Health Monitors",
+      "type": "grouped",
+      "description": "System health & tracking",
+      "freshness": "warm",
+      "line": "automation",
+      "children": []
+    },
+    {
+      "id": "hydra-ops",
+      "name": "HYDRA Ops",
+      "type": "grouped",
+      "description": "Agent coordination jobs",
+      "freshness": "hot",
+      "line": "automation",
+      "children": [
+        {
+          "label": "com.hydra.agent-forge",
+          "comment": "HYDRA Agent: FORGE (Dev Specialist) - 30 minute heartbeat",
+          "schedule": "manual",
+          "script": "/Users/eddiebelaval/.hydra/daemons/agent-runner.sh"
+        },
+        {
+          "label": "com.hydra.agent-milo",
+          "comment": "HYDRA Agent: MILO (Coordinator) - 15 minute heartbeat",
+          "schedule": "manual",
+          "script": "/Users/eddiebelaval/.hydra/daemons/agent-runner.sh"
+        },
+        {
+          "label": "com.hydra.agent-pulse",
+          "comment": "HYDRA Agent: PULSE (Ops Specialist) - 30 minute heartbeat",
+          "schedule": "manual",
+          "script": "/Users/eddiebelaval/.hydra/daemons/agent-runner.sh"
+        },
+        {
+          "label": "com.hydra.agent-scout",
+          "comment": "HYDRA Agent: SCOUT (Research Specialist) - 60 minute heartbeat",
+          "schedule": "manual",
+          "script": "/Users/eddiebelaval/.hydra/daemons/agent-runner.sh"
+        },
+        {
+          "label": "com.hydra.briefing",
+          "comment": "HYDRA Morning Briefing - Opens in MacDown at 8:40 AM",
+          "schedule": "08:40",
+          "script": "/Users/eddiebelaval/.hydra/daemons/daily-briefing.sh"
+        },
+        {
+          "label": "com.hydra.notification-check",
+          "comment": "HYDRA Notification Check (every 5 minutes)",
+          "schedule": "manual",
+          "script": "/Users/eddiebelaval/.hydra/daemons/notification-check.sh"
+        },
+        {
+          "label": "com.hydra.standup",
+          "comment": "HYDRA Daily Standup Generator (8:35 AM daily, after sync)",
+          "schedule": "08:35",
+          "script": "/Users/eddiebelaval/Development/scripts/hydra-standup.sh"
+        },
+        {
+          "label": "com.hydra.sync",
+          "comment": "HYDRA Multi-Agent Task Synchronization (8:30 AM daily)",
+          "schedule": "08:30",
+          "script": "/Users/eddiebelaval/Development/scripts/hydra-sync.sh"
+        },
+        {
+          "label": "com.hydra.telegram-listener",
+          "comment": "HYDRA Telegram Command Listener (long-polling daemon)",
+          "schedule": "manual",
+          "script": "/Users/eddiebelaval/.hydra/daemons/telegram-listener.sh"
+        }
+      ]
+    },
+    {
+      "id": "evening-jobs",
+      "name": "Evening Jobs",
+      "type": "grouped",
+      "description": "End of day automation",
+      "freshness": "warm",
+      "line": "automation",
+      "children": [
+        {
+          "label": "com.id8labs.auto-compound",
+          "comment": "",
+          "schedule": "23:00",
+          "script": "-c"
+        },
+        {
+          "label": "com.id8labs.caffeinate",
+          "comment": "",
+          "schedule": "22:00",
+          "script": "-i"
+        },
+        {
+          "label": "com.id8labs.compound-review",
+          "comment": "",
+          "schedule": "22:30",
+          "script": "-c"
+        },
+        {
+          "label": "com.id8labs.context-switch-tracker",
+          "comment": "",
+          "schedule": "23:00",
+          "script": "/Users/eddiebelaval/Development/scripts/context-switch-tracker.sh"
+        },
+        {
+          "label": "com.id8labs.evening-kickoff",
+          "comment": "",
+          "schedule": "18:00",
+          "script": "/Users/eddiebelaval/Development/scripts/evening-kickoff.sh"
+        },
+        {
+          "label": "com.id8labs.git-hygiene",
+          "comment": "",
+          "schedule": "04:00",
+          "script": "/Users/eddiebelaval/Development/scripts/git-hygiene.sh"
+        },
+        {
+          "label": "com.id8labs.overnight-organize",
+          "comment": "",
+          "schedule": "03:00",
+          "script": "/Users/eddiebelaval/Development/scripts/overnight-organize.sh"
+        },
+        {
+          "label": "com.id8labs.weekly-backup",
+          "comment": "",
+          "schedule": "02:00",
+          "script": "/Users/eddiebelaval/Documents/ID8Labs-LLC/Scripts/weekly-backup.sh"
+        },
+        {
+          "label": "com.eddieb.dev-health-collection",
+          "comment": "",
+          "schedule": "03:00",
+          "script": ""
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "tasks": {
+      "total": 2,
+      "pending": 0,
+      "inProgress": 1,
+      "completedToday": 0
+    },
+    "totalStations": 21,
+    "totalJobs": 36
+  }
+}
