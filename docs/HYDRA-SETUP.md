@@ -153,5 +153,11 @@ The hybrid approach combines automated signal detection with intelligent agent r
 
 ---
 
+## Article
+
+For the full story of how HYDRA was designed and built, see:
+[Building an AI-Human Operating System v2](./articles/building-ai-human-os-v2.md)
+
+---
+
 *Created: 2026-02-05*
-*Article: "Building an AI-Human Operating System v2" (pending)*
